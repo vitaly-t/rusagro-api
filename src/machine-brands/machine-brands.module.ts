@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MachineBrandsService } from './machine-brands.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MachineBrand } from './machine-brands.entity';
+import { MachineBrandsEntity } from './machine-brands.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MachineBrand])],
+  imports: [TypeOrmModule.forFeature([MachineBrandsEntity])],
   providers: [MachineBrandsService],
 })
 export class MachineBrandsModule {
