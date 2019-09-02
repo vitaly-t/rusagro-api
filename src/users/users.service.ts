@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './user.entity';
 import { Repository } from 'typeorm';
-
-export type User = any;
+import { UsersEntity } from './users.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    @InjectRepository(UsersEntity)
+    private readonly usersRepository: Repository<UsersEntity>,
   ) {
   }
 
-  async findOneFull(username): Promise<User> {
+  async findOneFull(username: string): Promise<UsersEntity> {
     return await this.usersRepository.findOne({
       select: [
         'id', 'username', 'password', 'email', 'firstName', 'lastName', 'phone',
@@ -22,11 +20,11 @@ export class UsersService {
     });
   }
 
-  async findOne(id: string): Promise<any> {
-    return await this.usersRepository.findOne(id);
+  async findOne(id: string): Promise<UsersEntity> {
+    return await this.usersRepository.findOne(id, { where: { disabled: false } });
   }
 
-  async findAll(): Promise<any> {
-    return await this.usersRepository.find();
+  async findAll(): Promise<UsersEntity[]> {
+    return await this.usersRepository.find({ where: { disabled: false } });
   }
 }
