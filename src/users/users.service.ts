@@ -18,7 +18,7 @@ export class UsersService {
   async findOneFull(username: string) {
     const query = `select id, username, password, first_name as "firstName",
     last_name as "lastName", email, phone
-    from users where id = $1 and disabled = false`;
+    from users where username = $1 and disabled = false`;
     return await this.db.findOne(query, [username]);
   }
 }
