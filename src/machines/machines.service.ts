@@ -8,7 +8,7 @@ export class MachinesService {
 
   async findAll(departmentId: number) {
     const query = `select m.id, m.inventory_number as "inventoryNumber",
-    m.latitude, m.longitude,
+    m.latitude, m.longitude,  m.plate_number as "plateNumber", m.gps_imei as "gpsImei",
     m2.brand, t.type from machines m
     join machine_brands m2 on m.brand_id = m2.id
     join machine_types t on m.type_id = t.id

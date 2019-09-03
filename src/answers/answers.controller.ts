@@ -1,4 +1,4 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Request, UseGuards, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AnswersService } from './answers.service';
 
@@ -11,5 +11,10 @@ export class AnswersController {
   @Get()
   async findAll(@Request() req) {
     return await this.answersService.findAll(req.user.id);
+  }
+
+  @Post()
+  async createAnswer(@Request() req, @Body() body) {
+    return await this.answersService.createAnswer(req.user.id)
   }
 }

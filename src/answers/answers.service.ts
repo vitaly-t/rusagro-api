@@ -78,4 +78,9 @@ export class AnswersService {
     });
     return dbres;
   }
+
+  async createAnswer(userId) {
+    const query = ``;
+    return await this.db.findOne(query, []);
+  }
 }
