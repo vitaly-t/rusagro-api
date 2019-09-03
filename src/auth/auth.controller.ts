@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -14,6 +14,12 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard('local'))
+  @Post('repeat')
+  async repeatCode(@Body('id') id: number) {
+    return this.authService.repeatCode(id);
+  }
+
+  @UseGuards(AuthGuard('local'))
   @Post('confirm')
   async loginWithCode(@Request() req) {
     return this.authService.loginWithCode(req.user, req.body.code);
@@ -22,8 +28,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('logout')
   async logout(@Request() req) {
-    req.logout();
-    return { success: true };
+    return req.logout();
   }
 
   @UseGuards(AuthGuard('jwt'))

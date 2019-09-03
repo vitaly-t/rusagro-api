@@ -54,6 +54,16 @@ export class AuthService {
     }
   }
 
+  async repeatCode(id: number) {
+    if (!this.authObj[id]) {
+      const user = await this.usersService.findOne(id);
+      this.authObj[id] = { code: null, timerId: null };
+      this.authObj[id].code = Math.floor(Math.random() * 9000 + 1000);
+      this.authObj[id].timerId = setTimeout(() => delete this.authObj[id], 120 * 1000); // 120s
+      await this.mailService.sendMail(user.email, '' + this.authObj[id].code);
+    }
+  }
+
   async loginWithCode(user: any, code: string) {
     if (this.authObj[user.id] && +code === +this.authObj[user.id].code) {
       clearTimeout(this.authObj[user.id].timerId);
