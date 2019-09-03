@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as pgPromise from 'pg-promise';
+import { User } from '../users/user.interface';
 
 @Injectable()
 export class DbService {
@@ -13,5 +14,12 @@ export class DbService {
 
   async find(query: string, values: any[]) {
     return await this.db.many(query, values);
+  }
+
+  async getUserById(id: number): Promise<User> {
+    const query = `select id, username, first_name as "firstName",
+    last_name as "lastName", email, phone
+    from users where id = $1 and disabled = false`;
+    return await this.db.one(query, [id]);
   }
 }
