@@ -13,7 +13,7 @@ export class DbService {
   }
 
   async find(query: string, values: any[]) {
-    return await this.db.many(query, values);
+    return await this.db.any(query, values);
   }
 
   async getUserById(id: number): Promise<User> {
