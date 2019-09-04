@@ -79,8 +79,7 @@ export class AnswersService {
     return dbres;
   }
 
-  async createAnswer(userId) {
-    const query = ``;
-    return await this.db.findOne(query, []);
+  async createAnswer(userId: number, machineId: number, files: any[]) {
+    return await this.db.createAsnwer(userId, machineId, files);
   }
 }
