@@ -74,6 +74,7 @@ export class AnswersService {
     a.id               as "answerId",
     m.id               as "machineId",
     m.inventory_number as "inventoryNumber",
+    m.plate_number     as "plateNumber",
     m2.brand, t.type,
     date_created       as "dateCreated",
     a.answer, q.question
