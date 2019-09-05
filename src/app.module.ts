@@ -6,6 +6,7 @@ import { DbModule } from './db/db.module';
 import { AnswersModule } from './answers/answers.module';
 import { DepartmentsModule } from './departments/departments.module';
 import { MachinesModule } from './machines/machines.module';
+import { HistoryModule } from './history/history.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MachinesModule } from './machines/machines.module';
     AnswersModule,
     DepartmentsModule,
     MachinesModule,
+    HistoryModule,
   ],
   controllers: [AppController],
 })
