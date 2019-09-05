@@ -118,4 +118,27 @@ export class AnswersService {
   async createAnswer(userId: number, machineId: number, files: any[]) {
     return await this.db.createAsnwer(userId, machineId, files);
   }
+
+  async saveAnswer(answerId: number, answer: object) {
+    const query = `with updated as (
+    update answers
+    set answer = $1, date_updated = now()
+    where id = $2
+    returning id, answer, date_created, machine_id)
+    select updated.id, updated.answer, updated.date_created as "dateCreated",
+    t.type, mb.brand, q.question
+    from updated
+    join machines m2 on updated.machine_id = m2.id
+    join machine_types t on m2.type_id = t.id
+    join quizzes q on t.id = q.machine_type_id
+    join machine_brands mb on m2.brand_id = mb.id;`;
+    const dbres = await this.db.findOne(query, [JSON.stringify(answer), answerId]);
+    dbres.ansCount = this.getAnsCountByZone(dbres.answer);
+    dbres.qCount = this.getQCountByZone(dbres.question);
+    dbres.corrCount = this.getCorrAnsCountByZone(dbres.answer);
+    dbres.totalAnsCount = Object.values(dbres.ansCount).reduce((ac: any, v: any) => ac + v, 0);
+    dbres.totalQCount = Object.values(dbres.qCount).reduce((ac: any, v: any) => ac + v, 0);
+    dbres.totalCorrCount = Object.values(dbres.corrCount).reduce((ac: any, v: any) => ac + v, 0);
+    return dbres;
+  }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Request, UseGuards, Body, UseInterceptors, UploadedFiles, Param } from '@nestjs/common';
+import { Controller, Get, Post, Request, UseGuards, Body, UseInterceptors, UploadedFiles, Param, Put } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AnswersService } from './answers.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -26,5 +26,10 @@ export class AnswersController {
     const userId = req.user.id;
     const machineId = body.machineId;
     return await this.answersService.createAnswer(userId, machineId, files);
+  }
+
+  @Put(':id')
+  async saveAnswer(@Body() body, @Param('id') answerId: number) {
+    return this.answersService.saveAnswer(answerId, body.answer);
   }
 }
