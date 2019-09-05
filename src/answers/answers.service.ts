@@ -38,11 +38,20 @@ export class AnswersService {
   private getQCountTotal(question): number {
     let res = 0;
     question.pages.forEach(zone => {
-      zone.elements.forEach(panel => {
-        if (Object.values(panel.elements).find((q: any) => q.type === 'radiogroup')) {
-          res++;
+      if (zone.name === 'pin') {
+        try {
+          res += zone.elements[1].elements.length;
+        } catch {
+          res += 0;
         }
-      });
+      } else {
+        res += zone.elements.length;
+      }
+      // zone.elements.forEach(panel => {
+      //   if (Object.values(panel.elements).find((q: any) => q.type === 'radiogroup')) {
+      //     res++;
+      //   }
+      // });
     });
     return res;
   }
@@ -50,7 +59,15 @@ export class AnswersService {
   private getQCountByZone(question) {
     const res = {};
     question.pages.forEach(zone => {
-      res[zone.name] = zone.elements.length;
+      if (zone.name === 'pin') {
+        try {
+          res[zone.name] = zone.elements[1].elements.length;
+        } catch {
+          res[zone.name] = '?';
+        }
+      } else {
+        res[zone.name] = zone.elements.length;
+      }
     });
     return res;
   }
