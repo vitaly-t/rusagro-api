@@ -6,6 +6,23 @@ export class AnswersService {
   constructor(private readonly db: DbService) {
   }
 
+  private getAnsCountByZone(answer) {
+    const res = {};
+    Object.keys(answer).forEach(zone => {
+      res[zone] = 0;
+      answer[zone].panels.forEach(panel => {
+        let cnt = 0;
+        Object.keys(panel.questions).forEach(key => {
+          cnt += ['0', '1', '2'].includes(panel.questions[key].a) ? 1 : 0;
+        });
+        if (cnt > 0) {
+          res[zone]++;
+        }
+      });
+    });
+    return res;
+  }
+
   private getAnsCountTotal(answer): number {
     let res = 0;
     Object.keys(answer).forEach(zone => {
@@ -77,6 +94,24 @@ export class AnswersService {
       delete row.question;
     });
     return dbres;
+  }
+
+  async findOne(answerId: number) {
+    const query = `select a.id, a.answer, t.type, mb.brand, q.question
+    from answers a
+    join machines m2 on a.machine_id = m2.id
+    join machine_types t on m2.type_id = t.id
+    join quizzes q on t.id = q.machine_type_id
+    join machine_brands mb on m2.brand_id = mb.id
+    where a.id = $1`;
+    const answer = await this.db.findOne(query, [answerId]);
+    answer.ansCount = this.getAnsCountByZone(answer.answer);
+    answer.qCount = this.getQCountByZone(answer.question);
+    answer.corrCount = this.getCorrAnsCountByZone(answer.answer);
+    answer.totalAnsCount = Object.values(answer.ansCount).reduce((ac: any, v: any) => ac + v, 0);
+    answer.totalQCount = Object.values(answer.qCount).reduce((ac: any, v: any) => ac + v, 0);
+    answer.totalCorrCount = Object.values(answer.corrCount).reduce((ac: any, v: any) => ac + v, 0);
+    return answer;
   }
 
   async createAnswer(userId: number, machineId: number, files: any[]) {

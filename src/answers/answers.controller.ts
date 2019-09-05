@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Request, UseGuards, Body, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Request, UseGuards, Body, UseInterceptors, UploadedFiles, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AnswersService } from './answers.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -12,6 +12,11 @@ export class AnswersController {
   @Get()
   async findAll(@Request() req) {
     return await this.answersService.findAll(req.user.id);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    return await this.answersService.findOne(id);
   }
 
   // TODO: files validation
