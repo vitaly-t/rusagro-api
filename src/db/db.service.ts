@@ -45,7 +45,7 @@ export class DbService {
           values.forEach(v => v.answer_id = id);
           const query = this.pgp.helpers.insert(values, cs);
           t.none(query);
-          return {answerId: id};
+          return { answerId: id };
         });
     });
   }
@@ -56,5 +56,11 @@ export class DbService {
       const ts = opts.map(opt => t[opt.method](opt.query, opt.values));
       return t.batch(ts);
     });
+  }
+
+  async insertCS(columns: string[], table: string, values: any[]) {
+    const cs = new this.pgp.helpers.ColumnSet(columns, { table });
+    const query = this.pgp.helpers.insert(values, cs) + 'returning id';
+    return await this.db.map(query, [], a => +a.id);
   }
 }
