@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AnswersService } from './answers.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
-@UseGuards(AuthGuard('jwt'))
+// @UseGuards(AuthGuard('jwt'))
 @Controller('answers')
 export class AnswersController {
   constructor(private readonly answersService: AnswersService) {

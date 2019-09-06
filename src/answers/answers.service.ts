@@ -11,59 +11,41 @@ export class AnswersService {
     Object.keys(answer).forEach(zone => {
       res[zone] = 0;
       answer[zone].panels.forEach(panel => {
-        let cnt = 0;
-        Object.keys(panel.questions).forEach(key => {
-          cnt += ['0', '1', '2'].includes(panel.questions[key].a) ? 1 : 0;
-        });
-        if (cnt > 0) {
-          res[zone]++;
+        const qKeys = Object.keys(panel.questions);
+        if (panel.questions[qKeys[0]]) {
+          const q = panel.questions[qKeys[0]];
+          if (zone === 'pin') {
+            if (!!q.a || (typeof q.a === 'object' && q.a.length > 0)) {
+              res[zone]++;
+            }
+          } else {
+            if (q.t === 'radiogroup' && q.a === '1') {
+              res[zone]++;
+            }
+            if (q.t === 'text' && q.a !== '') {
+              res[zone]++;
+            }
+            if (q.t === 'file' && q.a.length > 0) {
+              res[zone]++;
+            }
+          }
         }
       });
     });
     return res;
   }
 
-  private getAnsCountTotal(answer): number {
-    let res = 0;
-    Object.keys(answer).forEach(zone => {
-      answer[zone].panels.forEach(panel => {
-        if (Object.values(panel.questions).find((q: any) => q.t === 'radiogroup')) {
-          res++;
-        }
-      });
-    });
-    return res;
-  }
-
-  private getQCountTotal(question): number {
-    let res = 0;
-    question.pages.forEach(zone => {
-      if (zone.name === 'pin') {
-        try {
-          res += zone.elements[1].elements.length;
-        } catch {
-          res += 0;
-        }
-      } else {
-        res += zone.elements.length;
-      }
-      // zone.elements.forEach(panel => {
-      //   if (Object.values(panel.elements).find((q: any) => q.type === 'radiogroup')) {
-      //     res++;
-      //   }
-      // });
-    });
-    return res;
-  }
-
-  private getQCountByZone(question) {
+  private getQCountByZone(question, pin) {
     const res = {};
     question.pages.forEach(zone => {
       if (zone.name === 'pin') {
         try {
-          res[zone.name] = zone.elements[1].elements.length;
+          const selectedPin = pin.panels[0].questions.qp0c1;
+          if (selectedPin) {
+            res[zone.name] = 25;
+          }
         } catch {
-          res[zone.name] = '?';
+          res[zone.name] = 1;
         }
       } else {
         res[zone.name] = zone.elements.length;
@@ -104,9 +86,10 @@ export class AnswersService {
     where user_id = $1`;
     const dbres = await this.db.find(query, [userId]);
     dbres.forEach((row: any) => {
-      row.ansCount = this.getAnsCountTotal(row.answer);
-      row.qCount = this.getQCountTotal(row.question);
-      row.qCountByZone = this.getQCountByZone(row.question);
+      const ansCountByZone = this.getAnsCountByZone(row.answer);
+      row.ansCount = Object.values(ansCountByZone).reduce((ac: any, v: any) => ac + v, 0);
+      row.qCountByZone = this.getQCountByZone(row.question, {});
+      row.qCount = Object.values(row.qCount).reduce((ac: any, v: any) => ac + v, 0);
       row.corrCountByZone = this.getCorrAnsCountByZone(row.answer);
       row.corrCount = Object.values(this.getCorrAnsCountByZone(row.answer)).reduce((ac: any, v: any) => ac + v, 0);
       delete row.answer;
@@ -125,11 +108,11 @@ export class AnswersService {
     where a.id = $1`;
     const answer = await this.db.findOne(query, [answerId]);
     answer.ansCount = this.getAnsCountByZone(answer.answer);
-    answer.qCount = this.getQCountByZone(answer.question);
+    answer.qCount = this.getQCountByZone(answer.question, answer.answer.pin);
     answer.corrCount = this.getCorrAnsCountByZone(answer.answer);
     answer.totalAnsCount = Object.values(answer.ansCount).reduce((ac: any, v: any) => ac + v, 0);
     answer.totalQCount = Object.values(answer.qCount).reduce((ac: any, v: any) => ac + v, 0);
-    answer.totalCorrCount = Object.values(answer.corrCount).reduce((ac: any, v: any) => ac + v, 0);
+    // answer.totalCorrCount = Object.values(answer.corrCount).reduce((ac: any, v: any) => ac + v, 0);
     return answer;
   }
 
@@ -137,7 +120,7 @@ export class AnswersService {
     return await this.db.createAsnwer(userId, machineId, files);
   }
 
-  async saveAnswer(answerId: number, answer: object) {
+  async saveAnswer(answerId: number, answer) {
     const query = `with updated as (
     update answers
     set answer = $1, date_updated = now()
@@ -152,11 +135,11 @@ export class AnswersService {
     join machine_brands mb on m2.brand_id = mb.id;`;
     const dbres = await this.db.findOne(query, [JSON.stringify(answer), answerId]);
     dbres.ansCount = this.getAnsCountByZone(dbres.answer);
-    dbres.qCount = this.getQCountByZone(dbres.question);
+    dbres.qCount = this.getQCountByZone(dbres.question, answer.answer);
     dbres.corrCount = this.getCorrAnsCountByZone(dbres.answer);
     dbres.totalAnsCount = Object.values(dbres.ansCount).reduce((ac: any, v: any) => ac + v, 0);
     dbres.totalQCount = Object.values(dbres.qCount).reduce((ac: any, v: any) => ac + v, 0);
-    dbres.totalCorrCount = Object.values(dbres.corrCount).reduce((ac: any, v: any) => ac + v, 0);
+    // dbres.totalCorrCount = Object.values(dbres.corrCount).reduce((ac: any, v: any) => ac + v, 0);
     return dbres;
   }
 }
