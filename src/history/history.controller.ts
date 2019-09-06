@@ -9,7 +9,13 @@ export class HistoryController {
   }
 
   @Get(':brandId')
-  async findOne(@Param('brandId') brandId: number) {
-    return await this.historyService.findOne(brandId);
+  async findHistory(@Param('brandId') brandId: number) {
+    return await this.historyService.findHistory(brandId);
+  }
+
+  
+  @Get('/answer/:answerId')
+  async findOne(@Param('answerId') answerId: number) {
+    return await this.historyService.findOne(answerId);
   }
 }
