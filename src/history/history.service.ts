@@ -25,7 +25,7 @@ export class HistoryService {
   }
 
   async findOne(answerId: number) {
-    const query = `select a.id as "answerId", a.answer,
+    const query = `select a.id as "answerId", a.answer, mb.id as "brandId",
     a.date_created as "dateCreated", q.quiz, q.question, mb.brand,
     m2.plate_number as "plateNumber", m2.inventory_number as "inventoryNumber"
     from answers a
