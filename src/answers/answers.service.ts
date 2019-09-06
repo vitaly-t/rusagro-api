@@ -91,7 +91,7 @@ export class AnswersService {
       row.qCountByZone = this.getQCountByZone(row.question, row.answer.pin);
       row.qCount = Object.values(row.qCountByZone).reduce((ac: any, v: any) => ac + v, 0);
       row.corrCountByZone = this.getCorrAnsCountByZone(row.answer);
-      row.corrCount = Object.values(this.getCorrAnsCountByZone(row.answer)).reduce((ac: any, v: any) => ac + v, 0);
+      row.corrCount = Object.values(row.corrCountByZone).reduce((ac: any, v: any) => ac + v, 0);
       delete row.answer;
       delete row.question;
     });
