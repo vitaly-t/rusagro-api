@@ -93,6 +93,7 @@ export class AnswersService {
     m.inventory_number as "inventoryNumber",
     m.plate_number     as "plateNumber",
     m2.brand, t.type,
+    m2.id              as "brandId",
     date_created       as "dateCreated",
     a.answer, q.question
     from answers a
