@@ -13,7 +13,6 @@ export class HistoryController {
     return await this.historyService.findHistory(brandId);
   }
 
-  
   @Get('/answer/:answerId')
   async findOne(@Param('answerId') answerId: number) {
     return await this.historyService.findOne(answerId);
