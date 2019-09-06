@@ -88,8 +88,8 @@ export class AnswersService {
     dbres.forEach((row: any) => {
       const ansCountByZone = this.getAnsCountByZone(row.answer);
       row.ansCount = Object.values(ansCountByZone).reduce((ac: any, v: any) => ac + v, 0);
-      row.qCountByZone = this.getQCountByZone(row.question, {});
-      row.qCount = Object.values(row.qCount).reduce((ac: any, v: any) => ac + v, 0);
+      row.qCountByZone = this.getQCountByZone(row.question, row.answer.pin);
+      row.qCount = Object.values(row.qCountByZone).reduce((ac: any, v: any) => ac + v, 0);
       row.corrCountByZone = this.getCorrAnsCountByZone(row.answer);
       row.corrCount = Object.values(this.getCorrAnsCountByZone(row.answer)).reduce((ac: any, v: any) => ac + v, 0);
       delete row.answer;
