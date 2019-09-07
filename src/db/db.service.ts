@@ -38,7 +38,7 @@ export class DbService {
         size: file.size,
       });
     }
-    const aQuery = 'insert into answers (user_id, machine_id) values ($1, $2) returning id';
+    const aQuery = 'insert into answers (user_id, sss_id) values ($1, $2) returning id';
     return await this.db.tx(t => {
       return t.one(aQuery, [userId, machineId], a => +a.id)
         .then(id => {

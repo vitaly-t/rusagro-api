@@ -103,7 +103,22 @@ export class AnswersService {
     join machine_types t on m.type_id = t.id
     join quizzes q on t.id = q.machine_type_id
     where user_id = $1`;
-    const dbres = await this.db.find(query, [userId]);
+    const query1 = `select
+    a.id               as "answerId",
+    s.id               as "machineId",
+    s.inventory_number as "inventoryNumber",
+    s.plate_number     as "plateNumber",
+    s.brand,
+    mt.type,
+    a.date_created       as "dateCreated",
+    a.answer,
+    q.question
+    from answers a
+    join sss s on a.sss_id = s.id
+    join machine_types mt on s.type_id = mt.id
+    join quizzes q on mt.id = q.machine_type_id
+    where a.user_id = $1;`;
+    const dbres = await this.db.find(query1, [userId]);
     dbres.forEach((row: any) => {
       const ansCountByZone = this.getAnsCountByZone(row.answer);
       row.ansCount = Object.values(ansCountByZone).reduce((ac: any, v: any) => ac + v, 0);
@@ -132,7 +147,20 @@ export class AnswersService {
     join machine_brands mb on m2.brand_id = mb.id
     join production_departments d2 on m2.department_id = d2.id
     where a.id = $1`;
-    const answer = await this.db.findOne(query, [answerId]);
+    const query1 = `select
+    a.id, a.answer, mt.type, s.brand,
+    q.question, s.inventory_number as "inventoryNumber",
+    s.plate_number     as "plateNumber",
+    q.quiz,
+    a.date_created      as "dateCreated",
+    pd.name             as "productionDepartment"
+    from answers a
+    join sss s on a.sss_id = s.id
+    join machine_types mt on mt.id = s.type_id
+    join quizzes q on mt.id = q.machine_type_id
+    join production_departments pd on pd.id = s.department_id
+    where a.id = $1`;
+    const answer = await this.db.findOne(query1, [answerId]);
     answer.ansCount = this.getAnsCountByZone(answer.answer);
     answer.qCount = this.getQCountByZone(answer.question, answer.answer.pin);
     answer.corrCount = this.getCorrAnsCountByZone(answer.answer);
@@ -159,7 +187,23 @@ export class AnswersService {
     join machine_types t on m2.type_id = t.id
     join quizzes q on t.id = q.machine_type_id
     join machine_brands mb on m2.brand_id = mb.id;`;
-    const dbres = await this.db.findOne(query, [JSON.stringify(answer), answerId]);
+    const query1 = `with updated as (
+    update answers
+    set answer = $1, date_updated = now()
+    where id = $2
+    returning id, answer, date_created, sss_id)
+    select
+    updated.id,
+    updated.answer,
+    updated.date_created as "dateCreated",
+    mt.type,
+    s.brand,
+    q.question
+    from updated
+    join sss s on updated.sss_id = s.id
+    join machine_types mt on mt.id = s.type_id
+    join quizzes q on mt.id = q.machine_type_id;`;
+    const dbres = await this.db.findOne(query1, [JSON.stringify(answer), answerId]);
     dbres.ansCount = this.getAnsCountByZone(dbres.answer);
     dbres.qCount = this.getQCountByZone(dbres.question, dbres.answer.pin);
     dbres.corrCount = this.getCorrAnsCountByZone(dbres.answer);
