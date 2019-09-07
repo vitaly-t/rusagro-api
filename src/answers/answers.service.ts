@@ -28,9 +28,12 @@ export class AnswersService {
     Object.keys(answer).forEach(zone => {
       res[zone] = 0;
       answer[zone].panels.forEach(panel => {
-        const mainQKey = Object.keys(panel.questions).find(key => {
+        let mainQKey = Object.keys(panel.questions).find(key => {
           return /q\d+c\d+/.test(key);
         });
+        if (!mainQKey && zone === 'pin') {
+          mainQKey = 'qp0c1';
+        }
         if (mainQKey) {
           const q = panel.questions[mainQKey];
           if (zone === 'pin') {
@@ -64,7 +67,7 @@ export class AnswersService {
         try {
           const selectedPin = pin.panels[0].questions.qp0c1;
           if (selectedPin) {
-            res[zone.name] = 24;
+            res[zone.name] = 25;
           }
         } catch {
           res[zone.name] = 1;
@@ -129,7 +132,7 @@ export class AnswersService {
       row.qCount = Object.values(row.qCountByZone).reduce((ac: any, v: any) => ac + v, 0);
       row.corrCountByZone = this.getCorrAnsCountByZone(row.answer);
       row.corrCount = Object.values(row.corrCountByZone).reduce((ac: any, v: any) => ac + v, 0);
-      row.pins = this.getAnsweredPins(row.answer);
+      // row.pins = this.getAnsweredPins(row.answer);
       delete row.answer;
       delete row.question;
     });
@@ -212,8 +215,8 @@ export class AnswersService {
     dbres.corrCount = this.getCorrAnsCountByZone(dbres.answer);
     dbres.totalAnsCount = Object.values(dbres.ansCount).reduce((ac: any, v: any) => ac + v, 0);
     dbres.totalQCount = Object.values(dbres.qCount).reduce((ac: any, v: any) => ac + v, 0);
-    dbres.pins = this.getAnsweredPins(dbres.answer);
-    // dbres.totalCorrCount = Object.values(dbres.corrCount).reduce((ac: any, v: any) => ac + v, 0);
+    // dbres.pins = this.getAnsweredPins(dbres.answer);
+    dbres.totalCorrCount = Object.values(dbres.corrCount).reduce((ac: any, v: any) => ac + v, 0);
     return dbres;
   }
 }
