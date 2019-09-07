@@ -2,11 +2,15 @@ import { Controller, Get, Post, Request, UseGuards, Body, UseInterceptors, Uploa
 import { AuthGuard } from '@nestjs/passport';
 import { AnswersService } from './answers.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { MailService } from '../core/mail/mail.service';
+import { XlsService } from '../core/xls/xls.service';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('answers')
 export class AnswersController {
-  constructor(private readonly answersService: AnswersService) {
+  constructor(private readonly answersService: AnswersService,
+              private readonly mailService: MailService,
+              private readonly xlsService: XlsService) {
   }
 
   @Get()
@@ -31,5 +35,12 @@ export class AnswersController {
   @Put(':id')
   async saveAnswer(@Body() body, @Param('id') answerId: number) {
     return this.answersService.saveAnswer(answerId, body.answer);
+  }
+
+  @Post(':id/send')
+  async sendAnswer(@Param('id') id: number) {
+    const answer = await this.answersService.findOne(id);
+    const xls = this.xlsService.buildXLS(answer);
+    return await this.mailService.sendMail('dengornik@gmail.com', '', [{ filename: 'test.xls', content: xls }]);
   }
 }

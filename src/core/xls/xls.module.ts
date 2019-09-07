@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { XlsService } from './xls.service';
 
 @Module({
-  providers: [XlsService]
+  providers: [XlsService],
+  exports: [XlsService],
 })
-export class XlsModule {}
+export class XlsModule {
+}
