@@ -38,15 +38,18 @@ export class AnswersService {
               res[zone]++;
             }
           } else {
-            if (q.t === 'radiogroup' && q.a === '1') {
+            if (!!q.a) {
               res[zone]++;
             }
-            if (q.t === 'text' && q.a !== '') {
-              res[zone]++;
-            }
-            if (q.t === 'file' && q.a.length > 0) {
-              res[zone]++;
-            }
+            // if (q.t === 'radiogroup' && q.a === '1') {
+            //   res[zone]++;
+            // }
+            // if (q.t === 'text' && q.a !== '') {
+            //   res[zone]++;
+            // }
+            // if (q.t === 'file' && q.a.length > 0) {
+            //   res[zone]++;
+            // }
           }
         }
       });
@@ -61,7 +64,7 @@ export class AnswersService {
         try {
           const selectedPin = pin.panels[0].questions.qp0c1;
           if (selectedPin) {
-            res[zone.name] = 25;
+            res[zone.name] = 24;
           }
         } catch {
           res[zone.name] = 1;
