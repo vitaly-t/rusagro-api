@@ -123,12 +123,14 @@ export class AnswersService {
     m2.inventory_number as "inventoryNumber",
     m2.plate_number as "plateNumber",
     q.quiz,
-    a.date_created as "dateCreated"
+    a.date_created as "dateCreated",
+    d2.name as "productionDepartment"
     from answers a
     join machines m2 on a.machine_id = m2.id
     join machine_types t on m2.type_id = t.id
     join quizzes q on t.id = q.machine_type_id
     join machine_brands mb on m2.brand_id = mb.id
+    join production_departments d2 on m2.department_id = d2.id
     where a.id = $1`;
     const answer = await this.db.findOne(query, [answerId]);
     answer.ansCount = this.getAnsCountByZone(answer.answer);
