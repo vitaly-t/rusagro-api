@@ -1,16 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DbService } from '../db/db.service';
+import { User } from './user.interface';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly db: DbService) {
   }
 
-  async findOne(id: string) {
-    const q = `select id, username, first_name as "firstName",
-    last_name as "lastName", email, phone
-    from users where id = $1 and disabled = false`;
-    return await this.db.findOne(q, [id]);
+  async findOne(id: number): Promise<User> {
+    return await this.db.getUserById(id);
   }
 
   async findAll() {
@@ -18,6 +16,9 @@ export class UsersService {
   }
 
   async findOneFull(username: string) {
-    return await this.db.findOne('select * from users where username = $1 and disabled = false', [username]);
+    const query = `select id, username, password, first_name as "firstName",
+    last_name as "lastName", email, phone
+    from users where username = $1 and disabled = false`;
+    return await this.db.findOne(query, [username]);
   }
 }

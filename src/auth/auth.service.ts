@@ -36,7 +36,7 @@ export class AuthService {
 
   async login(user: any) {
     if (!user.email) {
-      const payload = { username: user.username, sub: user.userId };
+      const payload = { userId: user.id };
       return {
         jwt: this.jwtService.sign(payload),
         user,
@@ -51,6 +51,16 @@ export class AuthService {
       this.authObj[user.id].timerId = setTimeout(() => delete this.authObj[user.id], 120 * 1000); // 120s
       await this.mailService.sendMail(user.email, '' + this.authObj[user.id].code);
       return { id: user.username, firstName: user.firstName, lastName: user.lastName };
+    }
+  }
+
+  async repeatCode(id: number) {
+    if (!this.authObj[id]) {
+      const user = await this.usersService.findOne(id);
+      this.authObj[id] = { code: null, timerId: null };
+      this.authObj[id].code = Math.floor(Math.random() * 9000 + 1000);
+      this.authObj[id].timerId = setTimeout(() => delete this.authObj[id], 120 * 1000); // 120s
+      await this.mailService.sendMail(user.email, '' + this.authObj[id].code);
     }
   }
 
