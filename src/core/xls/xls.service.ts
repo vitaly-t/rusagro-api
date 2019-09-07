@@ -9,6 +9,7 @@ export class XlsService {
         const date = new Date(answer.dateCreated);
         // header 
         ws.A1 = { t: 's', v: answer.quiz };
+        ws.D2 = { t: 's', v: answer.productionDepartment };
         ws.D3 = { t: 's', v: answer.brand };
         ws.D4 = { t: 's', v: answer.plateNumber };
         ws.D5 = { t: 's', v: answer.inventoryNumber };
@@ -18,7 +19,7 @@ export class XlsService {
 
         Object.keys(answer.answer).forEach(key => {
             const curZone = answer.answer[key];
-            ws['A' + curRowNum] = curZone.title;
+            ws['A' + (++curRowNum)] = { t: 's', v: curZone.title };
             curZone.panels.forEach(curPanel => {
                 if (typeof curPanel.questions === 'object' && Object.keys(curPanel.questions).length) {
                     curRowNum++;
@@ -36,6 +37,17 @@ export class XlsService {
                         } else if (curQuestion.t === 'text') {
                             ws['D' + curRowNum] = { t: 's', v: curQuestion.a };
                         }
+                    } else if (questionId === 'qp0c1') { // тип распиновки
+                        ws['A' + curRowNum] = { t: 's', v: curQuestion.q };
+                        // TODO: unhardcode me
+                        const text = curQuestion.a === 0 ? 'GalileoSky v1.Х.Х; v2. Х.Х.' : 'GalileoSky v5.Х.';
+                        // try {
+                        //     text = answer.question.pages.find(el => el.name === 'pin').elements[0].choices
+                        //         .find(el => el.value === curQuestion.a).text;
+                        // } catch {
+                        //     text = curQuestion.a;
+                        // }
+                        ws['D' + curRowNum] = { t: 's', v: text };
                     } else if (curQuestion.t === 'file' || !curQuestion.t) {
                         return;
                     } else { // comment
