@@ -6,14 +6,33 @@ export class AnswersService {
   constructor(private readonly db: DbService) {
   }
 
+  private getAnsweredPins(answer) {
+    const pinA = answer.pin;
+    let res = 0;
+    pinA.panels.forEach(panel => {
+      let allAnswered = true;
+      Object.values(panel.questions).forEach((q: any) => {
+        if ((q.t === 'radiogroup' || q.t === 'text')) {
+          allAnswered = allAnswered && !!q.a;
+        }
+      });
+      if (allAnswered) {
+        res++;
+      }
+    });
+    return res - 1;
+  }
+
   private getAnsCountByZone(answer) {
     const res = {};
     Object.keys(answer).forEach(zone => {
       res[zone] = 0;
       answer[zone].panels.forEach(panel => {
-        const qKeys = Object.keys(panel.questions);
-        if (panel.questions[qKeys[0]]) {
-          const q = panel.questions[qKeys[0]];
+        const mainQKey = Object.keys(panel.questions).find(key => {
+          return /q\d+c\d+/.test(key);
+        });
+        if (mainQKey) {
+          const q = panel.questions[mainQKey];
           if (zone === 'pin') {
             if (!!q.a || (typeof q.a === 'object' && q.a.length > 0)) {
               res[zone]++;
@@ -92,6 +111,7 @@ export class AnswersService {
       row.qCount = Object.values(row.qCountByZone).reduce((ac: any, v: any) => ac + v, 0);
       row.corrCountByZone = this.getCorrAnsCountByZone(row.answer);
       row.corrCount = Object.values(row.corrCountByZone).reduce((ac: any, v: any) => ac + v, 0);
+      row.pins = this.getAnsweredPins(row.answer);
       delete row.answer;
       delete row.question;
     });
@@ -135,10 +155,11 @@ export class AnswersService {
     join machine_brands mb on m2.brand_id = mb.id;`;
     const dbres = await this.db.findOne(query, [JSON.stringify(answer), answerId]);
     dbres.ansCount = this.getAnsCountByZone(dbres.answer);
-    dbres.qCount = this.getQCountByZone(dbres.question, answer.answer);
+    dbres.qCount = this.getQCountByZone(dbres.question, dbres.answer.pin);
     dbres.corrCount = this.getCorrAnsCountByZone(dbres.answer);
     dbres.totalAnsCount = Object.values(dbres.ansCount).reduce((ac: any, v: any) => ac + v, 0);
     dbres.totalQCount = Object.values(dbres.qCount).reduce((ac: any, v: any) => ac + v, 0);
+    dbres.pins = this.getAnsweredPins(dbres.answer);
     // dbres.totalCorrCount = Object.values(dbres.corrCount).reduce((ac: any, v: any) => ac + v, 0);
     return dbres;
   }
