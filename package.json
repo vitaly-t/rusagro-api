@@ -34,7 +34,8 @@
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "rxjs": "^6.3.3",
-    "sharp": "^0.23.0"
+    "sharp": "^0.23.0",
+    "xlsx": "^0.15.1"
   },
   "devDependencies": {
     "@nestjs/testing": "^6.0.0",
