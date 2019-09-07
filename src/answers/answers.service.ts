@@ -119,7 +119,11 @@ export class AnswersService {
   }
 
   async findOne(answerId: number) {
-    const query = `select a.id, a.answer, t.type, mb.brand, q.question
+    const query = `select a.id, a.answer, t.type, mb.brand, q.question,
+    m2.inventory_number as "inventoryNumber",
+    m2.plate_number as "plateNumber",
+    q.quiz,
+    a.date_created as "dateCreated"
     from answers a
     join machines m2 on a.machine_id = m2.id
     join machine_types t on m2.type_id = t.id
