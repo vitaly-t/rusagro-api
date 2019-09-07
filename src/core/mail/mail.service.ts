@@ -6,7 +6,7 @@ export class MailService {
   constructor(private readonly mailerService: MailerService) {
   }
 
-  async sendMail(to: string, text: string, attachments: any[]): Promise<any> {
+  async sendMail(to: string, text: string, attachments?: any[]): Promise<any> {
     return await this.mailerService.sendMail({
       from: 'ostinmail111@google.com',
       to,
