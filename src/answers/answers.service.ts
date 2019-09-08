@@ -147,7 +147,7 @@ export class AnswersService {
     join production_departments d2 on m2.department_id = d2.id
     where a.id = $1`;
     const query1 = `select
-    a.id, a.answer, mt.type, s.brand, s.tracker_id as "trackerId"
+    a.id, a.answer, mt.type, s.brand, s.tracker_id as "trackerId",
     q.question, s.inventory_number as "inventoryNumber",
     s.plate_number     as "plateNumber",
     q.quiz,
