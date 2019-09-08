@@ -7,6 +7,8 @@ export class XlsService {
         const blankWB = XLSX.readFile('src/core/xls/blanks/blank_new.xls');
         const ws = blankWB.Sheets[blankWB.SheetNames[0]];
         const date = new Date(answer.dateCreated);
+        let curRowNum = 8; // number of header rows
+        
         // header 
         ws.A1 = { t: 's', v: answer.quiz };
         ws.D2 = { t: 's', v: answer.productionDepartment };
@@ -14,11 +16,13 @@ export class XlsService {
         ws.D4 = { t: 's', v: answer.plateNumber };
         ws.D5 = { t: 's', v: answer.inventoryNumber };
         ws.D6 = { t: 's', v: date.toLocaleDateString('ru-RU') };
-
-        let curRowNum = 8; // number of header rows
-
+        // gps tracker imei
+        ws['A' + (++curRowNum)] = { t: 's', v: 'Серийный номер IMEI GPS трекера:' };
+        ws['D' + curRowNum] = { t: 's', v: answer.trackerId };
+        
         Object.keys(answer.answer).forEach(key => {
             const curZone = answer.answer[key];
+            // zone name
             ws['A' + (++curRowNum)] = { t: 's', v: curZone.title };
             curZone.panels.forEach(curPanel => {
                 if (typeof curPanel.questions === 'object' && Object.keys(curPanel.questions).length) {

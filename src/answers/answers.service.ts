@@ -64,14 +64,7 @@ export class AnswersService {
     const res = {};
     question.pages.forEach(zone => {
       if (zone.name === 'pin') {
-        try {
-          const selectedPin = pin.panels[0].questions.qp0c1;
-          if (selectedPin) {
-            res[zone.name] = 25;
-          }
-        } catch {
-          res[zone.name] = 1;
-        }
+        res[zone.name] = 25;
       } else {
         res[zone.name] = zone.elements.length;
       }
@@ -154,7 +147,7 @@ export class AnswersService {
     join production_departments d2 on m2.department_id = d2.id
     where a.id = $1`;
     const query1 = `select
-    a.id, a.answer, mt.type, s.brand,
+    a.id, a.answer, mt.type, s.brand, s.tracker_id as "trackerId",
     q.question, s.inventory_number as "inventoryNumber",
     s.plate_number     as "plateNumber",
     q.quiz,

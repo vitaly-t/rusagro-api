@@ -49,7 +49,7 @@ export class AuthService {
       this.authObj[user.id] = { code: null, timerId: null };
       this.authObj[user.id].code = Math.floor(Math.random() * 9000 + 1000); // random number [1000, 9999]
       this.authObj[user.id].timerId = setTimeout(() => delete this.authObj[user.id], 120 * 1000); // 120s
-      await this.mailService.sendMail(user.email, '' + this.authObj[user.id].code);
+      await this.mailService.sendMail([user.email], '' + this.authObj[user.id].code);
       return { id: user.username, firstName: user.firstName, lastName: user.lastName };
     }
   }
@@ -60,7 +60,7 @@ export class AuthService {
       this.authObj[id] = { code: null, timerId: null };
       this.authObj[id].code = Math.floor(Math.random() * 9000 + 1000);
       this.authObj[id].timerId = setTimeout(() => delete this.authObj[id], 120 * 1000); // 120s
-      await this.mailService.sendMail(user.email, '' + this.authObj[id].code);
+      await this.mailService.sendMail([user.email], '' + this.authObj[id].code);
     }
   }
 
