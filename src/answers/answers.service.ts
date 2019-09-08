@@ -64,14 +64,7 @@ export class AnswersService {
     const res = {};
     question.pages.forEach(zone => {
       if (zone.name === 'pin') {
-        try {
-          const selectedPin = pin.panels[0].questions.qp0c1;
-          if (selectedPin) {
-            res[zone.name] = 25;
-          }
-        } catch {
-          res[zone.name] = 1;
-        }
+        res[zone.name] = 25;
       } else {
         res[zone.name] = zone.elements.length;
       }
