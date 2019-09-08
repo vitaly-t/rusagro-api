@@ -41,6 +41,7 @@ export class AnswersController {
   async sendAnswer(@Param('id') id: number) {
     const answer = await this.answersService.findOne(id);
     const xls = this.xlsService.buildXLS(answer);
-    return await this.mailService.sendMail('dengornik@gmail.com', '', [{ filename: 'test.xls', content: xls }]);
+    const emails = await this.mailService.findAll();
+    return await this.mailService.sendMail(emails.array, '', [{ filename: 'test.xls', content: xls }]);
   }
 }
