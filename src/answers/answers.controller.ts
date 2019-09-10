@@ -13,6 +13,11 @@ export class AnswersController {
               private readonly xlsService: XlsService) {
   }
 
+  @Get('pics')
+  async getPics() {
+    return await this.answersService.findPics(10);
+  }
+
   @Get()
   async findAll(@Request() req) {
     return await this.answersService.findAll(req.user.id);
@@ -42,6 +47,15 @@ export class AnswersController {
     const answer = await this.answersService.findOne(id);
     const xls = this.xlsService.buildXLS(answer);
     const emails = await this.mailService.findAll();
-    return await this.mailService.sendMail(emails.array, '', [{ filename: 'test.xls', content: xls }]);
+    const images = await this.answersService.findPics(id);
+    const attachment = [{ filename: 'test.xls', content: xls }];
+    images.forEach((element, id) => {
+      attachment.push({
+        filename: 'image' + id + '.jpg',
+        content: element.image
+      })
+    });
+
+    return await this.mailService.sendMail(emails.array, '', attachment);
   }
 }

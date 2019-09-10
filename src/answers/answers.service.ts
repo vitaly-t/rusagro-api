@@ -212,4 +212,9 @@ export class AnswersService {
     dbres.totalCorrCount = Object.values(dbres.corrCount).reduce((ac: any, v: any) => ac + v, 0);
     return dbres;
   }
+
+  findPics(id) {
+    const query = `select image from images where answer_id = $1`;
+    return this.db.find(query, [id]);
+  }
 }
