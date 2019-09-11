@@ -21,7 +21,7 @@ export class UsersService {
   async findAll() {
     return await this.db.find(
       `select id, username, email, first_name as "firstName", last_name as "lastName", phone from users where disabled = false`,
-      []
+      [],
     );
   }
 
@@ -33,24 +33,24 @@ export class UsersService {
   }
 
   createUser(userObj) {
-    const query = `insert into users 
-    (username, password, email, first_name, last_name, phone) 
-    values ($1, $2, $3, $4, $5, $6) 
+    const query = `insert into users
+    (username, password, email, first_name, last_name, phone)
+    values ($1, $2, $3, $4, $5, $6)
     returning id, username, email, first_name as "firstName", last_name as "lastName", phone`;
     return this.db.findOne(query,
-      [userObj.username, this.getHash(userObj.newPassword), userObj.email, userObj.firstName, userObj.lastName, userObj.phone]
+      [userObj.username, this.getHash(userObj.newPassword), userObj.email, userObj.firstName, userObj.lastName, userObj.phone],
     );
   }
 
   async updateUser(userObj, id) {
-    await this.db.none(`update users set 
-      username = $1, 
-      email = $2, 
-      first_name = $3, 
-      last_name = $4, 
+    await this.db.none(`update users set
+      username = $1,
+      email = $2,
+      first_name = $3,
+      last_name = $4,
       phone = $5
-      WHERE id = $6`, 
-      [userObj.username, userObj.email, userObj.firstName, userObj.lastName, userObj.email, id]
+      WHERE id = $6`,
+      [userObj.username, userObj.email, userObj.firstName, userObj.lastName, userObj.email, id],
     );
     const newPassword = userObj.newPassword;
     if (newPassword) {
