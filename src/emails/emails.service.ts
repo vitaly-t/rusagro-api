@@ -7,7 +7,7 @@ export class EmailsService {
   }
 
   async findAll() {
-    const query = 'select * from emails where disabled = false';
+    const query = 'select * from emails_for_distribution where disabled = false';
     return await this.db.findOne(query, []);
   }
 
