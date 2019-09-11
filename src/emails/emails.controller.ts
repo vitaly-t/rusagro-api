@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { EmailsService } from './emails.service';
 
@@ -11,5 +11,10 @@ export class EmailsController {
   @Get()
   async findAll() {
     return await this.emailsService.findAll();
+  }
+
+  @Delete(':id')
+  async deleteEmail(@Param('id') id: number) {
+    return await this.emailsService.delete(id);
   }
 }
