@@ -48,7 +48,7 @@ export class AnswersController {
   async sendAnswer(@Param('id') id: number) {
     const answer = await this.answersService.findOne(id);
     const xls = this.xlsService.buildXLS(answer);
-    const emails = await this.emailsService.findAll();
+    const emails = await this.emailsService.findAllInArray();
     const images = await this.answersService.findPics(id);
     const attachment = [{ filename: 'test.xls', content: xls }];
     images.forEach((element, imageId) => {
