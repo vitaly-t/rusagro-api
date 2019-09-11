@@ -4,12 +4,14 @@ import { AnswersService } from './answers.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { MailService } from '../core/mail/mail.service';
 import { XlsService } from '../core/xls/xls.service';
+import { EmailsService } from '../emails/emails.service';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('answers')
 export class AnswersController {
   constructor(private readonly answersService: AnswersService,
               private readonly mailService: MailService,
+              private readonly emailsService: EmailsService,
               private readonly xlsService: XlsService) {
   }
 
@@ -46,7 +48,7 @@ export class AnswersController {
   async sendAnswer(@Param('id') id: number) {
     const answer = await this.answersService.findOne(id);
     const xls = this.xlsService.buildXLS(answer);
-    const emails = await this.mailService.findAll();
+    const emails = await this.emailsService.findAll();
     const images = await this.answersService.findPics(id);
     const attachment = [{ filename: 'test.xls', content: xls }];
     images.forEach((element, imageId) => {
