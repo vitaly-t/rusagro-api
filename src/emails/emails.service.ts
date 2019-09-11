@@ -8,7 +8,7 @@ export class EmailsService {
 
   async findAll() {
     const query = 'select * from emails_for_distribution where disabled = false';
-    return await this.db.findOne(query, []);
+    return await this.db.find(query, []);
   }
 
   async findAllInArray() {
