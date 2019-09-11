@@ -49,11 +49,11 @@ export class AnswersController {
     const emails = await this.mailService.findAll();
     const images = await this.answersService.findPics(id);
     const attachment = [{ filename: 'test.xls', content: xls }];
-    images.forEach((element, id) => {
+    images.forEach((element, imageId) => {
       attachment.push({
-        filename: 'image' + id + '.jpg',
-        content: element.image
-      })
+        filename: 'image' + imageId + '.jpg',
+        content: element.image,
+      });
     });
 
     return await this.mailService.sendMail(emails.array, '', attachment);
