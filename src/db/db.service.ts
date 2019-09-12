@@ -18,6 +18,10 @@ export class DbService {
     return await this.db.any(query, values);
   }
 
+  async none(query: string, values?: any[]) {
+    return await this.db.none(query, values);
+  }
+
   async getUserById(id: number): Promise<User> {
     const query = `select id, username, first_name as "firstName",
     last_name as "lastName", email, phone
