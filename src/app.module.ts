@@ -9,6 +9,7 @@ import { MachinesModule } from './machines/machines.module';
 import { HistoryModule } from './history/history.module';
 import { ImagesModule } from './images/images.module';
 import { EmailsModule } from './emails/emails.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { EmailsModule } from './emails/emails.module';
     HistoryModule,
     ImagesModule,
     EmailsModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
 })
