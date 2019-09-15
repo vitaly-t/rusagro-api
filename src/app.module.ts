@@ -10,6 +10,7 @@ import { HistoryModule } from './history/history.module';
 import { ImagesModule } from './images/images.module';
 import { EmailsModule } from './emails/emails.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { QuizzesModule } from './quizzes/quizzes.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     ImagesModule,
     EmailsModule,
     AnalyticsModule,
+    QuizzesModule,
   ],
   controllers: [AppController],
 })
