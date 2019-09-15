@@ -8,7 +8,7 @@ export class MachinesService {
 
   async findAllAll() {
     const query = `select s.id, department_id as "departmentId", s.inventory_number as "inventoryNumber", s.plate_number as "plateNumber",
-    s.tracker_id as "gpsImei", s.brand, s.type from sss s`;
+    s.tracker_id as "gpsImei", s.brand, s.type, s.type_id from sss s`;
     return await this.db.find(query, []);
   }
 
@@ -20,7 +20,7 @@ export class MachinesService {
     join machine_types t on m.type_id = t.id
     where m.department_id = $1`;
     const query1 = `select s.id, s.inventory_number as "inventoryNumber", s.plate_number as "plateNumber",
-    s.tracker_id as "gpsImei", s.brand, s.type from sss s
+    s.tracker_id as "gpsImei", s.brand, s.type, s.type_id from sss s
     where s.department_id = $1;`;
     return await this.db.find(query1, [departmentId]);
   }
