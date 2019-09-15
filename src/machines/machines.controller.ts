@@ -8,6 +8,11 @@ export class MachinesController {
   constructor(private readonly machinesService: MachinesService) {
   }
 
+  @Get()
+  async findAllAll() {
+    return await this.machinesService.findAllAll();
+  }
+
   @Get('department/:departmentId')
   async findAll(@Param('departmentId') departmentId: number) {
     return await this.machinesService.findAll(departmentId);
