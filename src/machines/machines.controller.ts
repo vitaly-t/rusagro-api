@@ -8,6 +8,11 @@ export class MachinesController {
   constructor(private readonly machinesService: MachinesService) {
   }
 
+  @Get('admin')
+  async getEverything() {
+    return await this.machinesService.getEverything();
+  }
+
   @Get()
   async findAllAll() {
     return await this.machinesService.findAllAll();

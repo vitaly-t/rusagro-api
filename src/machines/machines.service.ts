@@ -6,6 +6,10 @@ export class MachinesService {
   constructor(private readonly db: DbService) {
   }
 
+  getEverything() {
+    return this.db.find('select * from sss', []);
+  }
+
   async findAllAll() {
     const query = `select s.id, department_id as "departmentId", s.inventory_number as "inventoryNumber", s.plate_number as "plateNumber",
     s.tracker_id as "gpsImei", s.brand, s.type, s.type_id from sss s`;
