@@ -11,6 +11,7 @@ import { ImagesModule } from './images/images.module';
 import { EmailsModule } from './emails/emails.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { QuizzesModule } from './quizzes/quizzes.module';
     EmailsModule,
     AnalyticsModule,
     QuizzesModule,
+    LogModule,
   ],
   controllers: [AppController],
 })
