@@ -86,7 +86,7 @@ export class AnswersService {
     return res;
   }
 
-  async findAll(userId: number) {
+  async findAllByUserId(userId: number) {
     const query = `select
     a.id               as "answerId",
     m.id               as "machineId",
