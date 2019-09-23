@@ -53,7 +53,7 @@ export class AnalyticsService {
       obj.ans.byType[ans.type] = obj.ans.byType[ans.type] || 0;
       obj.ans.byUser[ans.username] = obj.ans.byUser[ans.username] || {
         user: ans.firstName + ' ' + ans.lastName,
-        count: 0,
+        count: 0, percent: 0,
       };
       obj.byDate[date] = obj.byDate[date] || { countAns: 0, countWrongAns: 0, uniqueUsers: [] };
 
@@ -63,7 +63,7 @@ export class AnalyticsService {
       obj.wrongAns.byType[ans.type] = obj.wrongAns.byType[ans.type] || 0;
       obj.wrongAns.byUser[ans.username] = obj.wrongAns.byUser[ans.username] || {
         user: ans.firstName + ' ' + ans.lastName,
-        count: 0,
+        count: 0, percent: 0,
       };
       obj.top10WrongAns[ans.type] = obj.top10WrongAns[ans.type] || {};
 
@@ -94,8 +94,13 @@ export class AnalyticsService {
             mainQKey = 'qp0c1';
           }
 
+          const q = panel.questions[mainQKey];
+
           if (mainQKey) {
-            const q = panel.questions[mainQKey];
+            obj.top10WrongAns[ans.type][q.q] = obj.top10WrongAns[ans.type][q.q] || {
+              count: 0, percent: 0,
+            };
+
             if (
               !q.a ||
               (q.t === 'radiogroup' && q.a === '0') ||
@@ -108,8 +113,7 @@ export class AnalyticsService {
               obj.wrongAns.byType[ans.type]++;
               obj.byDate[date].countWrongAns++;
 
-              obj.top10WrongAns[ans.type][q.q] = obj.top10WrongAns[ans.type][q.q] || 0;
-              obj.top10WrongAns[ans.type][q.q]++;
+              obj.top10WrongAns[ans.type][q.q].count++;
             }
           }
         });
@@ -153,6 +157,11 @@ export class AnalyticsService {
         const field = obj.ans.byDepartments[dep];
         field.percent = Math.floor(field.count / obj.ans.total * 100);
       });
+
+      Object.keys(obj.ans.byUser).forEach(username => {
+        const field = obj.ans.byUser[username];
+        field.percent = Math.floor(field.count / obj.ans.total * 100);
+      });
     }
     if (obj.wrongAns.total > 0) {
       Object.keys(obj.wrongAns.byDepartments).forEach(dep => {
@@ -163,6 +172,18 @@ export class AnalyticsService {
       Object.keys(obj.wrongAns.byGroup).forEach(group => {
         const field = obj.wrongAns.byGroup[group];
         field.percent = Math.floor(field.count / obj.wrongAns.total * 100);
+      });
+
+      Object.keys(obj.wrongAns.byUser).forEach(username => {
+        const field = obj.wrongAns.byUser[username];
+        field.percent = Math.floor(field.count / obj.wrongAns.total * 100);
+      });
+
+      Object.keys(obj.top10WrongAns).forEach(type => {
+        Object.keys(obj.top10WrongAns[type]).forEach(username => {
+          const field = obj.top10WrongAns[type][username];
+          field.percent = Math.floor(field.count / obj.wrongAns.total * 100);
+        });
       });
     }
 
