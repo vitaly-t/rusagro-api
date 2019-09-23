@@ -187,6 +187,11 @@ export class AnalyticsService {
       });
     }
 
+    // mapping uniqueUsers
+    Object.keys(obj.byDate).forEach(date => {
+      obj.byDate[date].uniqueUsers = obj.byDate[date].uniqueUsers.length;
+    });
+
     return obj;
   }
 }
