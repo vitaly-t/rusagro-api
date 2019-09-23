@@ -40,7 +40,11 @@ export class AnalyticsService {
     };
 
     answers.forEach(ans => {
-      const date = new Date(ans.date).toLocaleDateString();
+      const date = new Date(ans.date).toLocaleDateString('ru', {
+          day: '2-digit',
+          month: '2-digit',
+        },
+      ).split('-').reverse().join('.');
 
       // init groupings
       obj.ans.byDepartments[ans.department] = obj.ans.byDepartments[ans.department] || 0;
