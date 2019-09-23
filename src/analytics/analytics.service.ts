@@ -6,11 +6,9 @@ export class AnalyticsService {
   constructor(private readonly answersService: AnswersService) {
   }
 
-  async getCommonAnalytics(dateFrom) {
-    const dateL: string = dateFrom.split('.').reverse().join('-');
-    const tempDate = new Date(dateL);
-    const month = tempDate.getMonth();
-    const dateF = new Date(tempDate.setMonth(month - 1)).toLocaleDateString();
+  async getCommonAnalytics(dateFrom, dateTo) {
+    const dateF = dateFrom.split('.').reverse().join('.');
+    const dateL = dateTo.split('.').reverse().join('.');
     const answers = await this.answersService.findAllInDateRange(dateF, dateL);
 
     const obj = {

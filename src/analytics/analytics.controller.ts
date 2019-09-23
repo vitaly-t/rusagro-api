@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { AnalyticsService } from './analytics.service';
 
 @Controller('analytics')
@@ -6,8 +6,9 @@ export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {
   }
 
-  @Get(':date')
-  async getCommonAnalytics(@Param('date') date: string) {
-    return await this.analyticsService.getCommonAnalytics(date);
+  @Get()
+  async getCommonAnalytics(@Query() query) {
+    const { firstDate, lastDate } = query;
+    return await this.analyticsService.getCommonAnalytics(firstDate, lastDate);
   }
 }
