@@ -40,7 +40,7 @@ export class AnalyticsService {
     };
 
     answers.forEach(ans => {
-      const date = new Date(ans.date).toLocaleDateString('ru', {
+      const date = new Date(ans.date).toLocaleDateString('ru-RU', {
           day: '2-digit',
           month: '2-digit',
         },
