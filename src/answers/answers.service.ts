@@ -86,7 +86,7 @@ export class AnswersService {
     return res;
   }
 
-  async findAllInDateRange() {
+  async findAllInDateRange(dateFrom: string, dateTo: string) {
     const query = `select u.username, u.first_name as "firstName",
     u.last_name as "lastName", answer, date(date_created), s.type,
     pd.name as "department"
@@ -95,8 +95,8 @@ export class AnswersService {
     join sss s on s.id = a2.sss_id
     join production_departments pd on pd.id = s.department_id
       where
-    date(date_created) >= '2019-09-01' and date(date_created) < '2019-10-01'`;
-    return await this.db.find(query);
+    date(date_created) >= $1 and date(date_created) <= $2`;
+    return await this.db.find(query, [dateFrom, dateTo]);
   }
 
   async findAllByUserId(userId: number) {
