@@ -139,6 +139,6 @@ export class AnalyticsService {
     obj.ans.avg = Math.floor(obj.ans.total / groupedByDateKeys.length);
     obj.createdByUser.avg = Math.floor(obj.createdByUser.total / groupedByDateKeys.length);
 
-    return { obj };
+    return obj;
   }
 }
