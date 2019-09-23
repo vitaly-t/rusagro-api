@@ -47,7 +47,9 @@ export class AnalyticsService {
       ).split('-').reverse().join('.');
 
       // init groupings
-      obj.ans.byDepartments[ans.department] = obj.ans.byDepartments[ans.department] || 0;
+      obj.ans.byDepartments[ans.department] = obj.ans.byDepartments[ans.department] || {
+        count: 0, percent: 0,
+      };
       obj.ans.byType[ans.type] = obj.ans.byType[ans.type] || 0;
       obj.ans.byUser[ans.username] = obj.ans.byUser[ans.username] || {
         user: ans.firstName + ' ' + ans.lastName,
@@ -55,7 +57,9 @@ export class AnalyticsService {
       };
       obj.byDate[date] = obj.byDate[date] || { countAns: 0, countWrongAns: 0, uniqueUsers: [] };
 
-      obj.wrongAns.byDepartments[ans.department] = obj.wrongAns.byDepartments[ans.department] || 0;
+      obj.wrongAns.byDepartments[ans.department] = obj.wrongAns.byDepartments[ans.department] || {
+        count: 0, percent: 0,
+      };
       obj.wrongAns.byType[ans.type] = obj.wrongAns.byType[ans.type] || 0;
       obj.wrongAns.byUser[ans.username] = obj.wrongAns.byUser[ans.username] || {
         user: ans.firstName + ' ' + ans.lastName,
@@ -64,7 +68,7 @@ export class AnalyticsService {
       obj.top10WrongAns[ans.type] = obj.top10WrongAns[ans.type] || {};
 
       // answers counting
-      obj.ans.byDepartments[ans.department]++;
+      obj.ans.byDepartments[ans.department].count++;
       obj.ans.byType[ans.type]++;
       obj.ans.byUser[ans.username].count++;
       obj.byDate[date].countAns++;
@@ -79,8 +83,7 @@ export class AnalyticsService {
       // wrong answers counting
       Object.keys(ans.answer).forEach(zone => {
         obj.wrongAns.byGroup[zone] = obj.wrongAns.byGroup[zone] || {
-          count: 0,
-          name: ans.answer[zone].title,
+          count: 0, name: ans.answer[zone].title, percent: 0,
         };
 
         ans.answer[zone].panels.forEach(panel => {
@@ -101,7 +104,7 @@ export class AnalyticsService {
               obj.wrongAns.total++;
               obj.wrongAns.byGroup[zone].count++;
               obj.wrongAns.byUser[ans.username].count++;
-              obj.wrongAns.byDepartments[ans.department]++;
+              obj.wrongAns.byDepartments[ans.department].count++;
               obj.wrongAns.byType[ans.type]++;
               obj.byDate[date].countWrongAns++;
 
@@ -143,6 +146,25 @@ export class AnalyticsService {
     obj.ans.avg = Math.floor(obj.ans.total / groupedByDateKeys.length);
     obj.createdByUser.avg = Math.floor(obj.createdByUser.total / groupedByDateKeys.length);
     obj.wrongAns.avg = Math.floor(obj.wrongAns.total / groupedByDateKeys.length);
+
+    // percents
+    if (obj.ans.total > 0) {
+      Object.keys(obj.ans.byDepartments).forEach(dep => {
+        const field = obj.ans.byDepartments[dep];
+        field.percent = Math.floor(field.count / obj.ans.total * 100);
+      });
+    }
+    if (obj.wrongAns.total > 0) {
+      Object.keys(obj.wrongAns.byDepartments).forEach(dep => {
+        const field = obj.wrongAns.byDepartments[dep];
+        field.percent = Math.floor(field.count / obj.wrongAns.total * 100);
+      });
+
+      Object.keys(obj.wrongAns.byGroup).forEach(group => {
+        const field = obj.wrongAns.byGroup[group];
+        field.percent = Math.floor(field.count / obj.wrongAns.total * 100);
+      });
+    }
 
     return obj;
   }
