@@ -7,7 +7,7 @@ export class AnalyticsController {
   }
 
   @Get()
-  async getQuizzes() {
-    return await this.analyticsService.findQuizzes();
+  async getCommonAnalytics() {
+    return await this.analyticsService.getCommonAnalytics();
   }
 }

@@ -9,6 +9,7 @@ import { EmailsModule } from '../emails/emails.module';
   imports: [MailModule, XlsModule, EmailsModule],
   controllers: [AnswersController],
   providers: [AnswersService],
+  exports: [AnswersService],
 })
 export class AnswersModule {
 }
