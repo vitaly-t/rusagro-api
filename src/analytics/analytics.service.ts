@@ -42,11 +42,9 @@ export class AnalyticsService {
     };
 
     answers.forEach(ans => {
-      const date = new Date(ans.date).toLocaleDateString('ru-RU', {
-          day: '2-digit',
-          month: '2-digit',
-        },
-      ).split('-').reverse().join('.');
+      const tempDate = new Date(ans.date);
+      const month = tempDate.getMonth() + 1;
+      const date = tempDate.getDate() + '.' + (month < 10 ? '0' + month : month);
 
       // init groupings
       obj.ans.byDepartments[ans.department] = obj.ans.byDepartments[ans.department] || {
