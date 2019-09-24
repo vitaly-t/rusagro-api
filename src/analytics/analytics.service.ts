@@ -37,7 +37,7 @@ export class AnalyticsService {
         avg: 0,
         total: 0,
       },
-      top10WrongAns: {},
+      top5WrongAns: {},
       byDate: {},
     };
 
@@ -67,7 +67,6 @@ export class AnalyticsService {
         user: ans.firstName + ' ' + ans.lastName,
         count: 0, percent: 0,
       };
-      obj.top10WrongAns[ans.type] = obj.top10WrongAns[ans.type] || {};
 
       // answers counting
       obj.ans.byDepartments[ans.department].count++;
@@ -99,10 +98,6 @@ export class AnalyticsService {
           const q = panel.questions[mainQKey];
 
           if (mainQKey) {
-            obj.top10WrongAns[ans.type][q.q] = obj.top10WrongAns[ans.type][q.q] || {
-              count: 0, percent: 0,
-            };
-
             if (
               !q.a ||
               (q.t === 'radiogroup' && q.a === '0') ||
@@ -115,7 +110,12 @@ export class AnalyticsService {
               obj.wrongAns.byType[ans.type]++;
               obj.byDate[date].countWrongAns++;
 
-              obj.top10WrongAns[ans.type][q.q].count++;
+              obj.top5WrongAns[q.q] = obj.top5WrongAns[q.q] || { count: 0, percent: 0, types: [] };
+              obj.top5WrongAns[q.q].count++;
+
+              if (!obj.top5WrongAns[q.q].types.includes(ans.type)) {
+                obj.top5WrongAns[q.q].types.push(ans.type);
+              }
             }
           }
         });
@@ -181,17 +181,62 @@ export class AnalyticsService {
         field.percent = Math.floor(field.count / obj.wrongAns.total * 100);
       });
 
-      Object.keys(obj.top10WrongAns).forEach(type => {
-        Object.keys(obj.top10WrongAns[type]).forEach(username => {
-          const field = obj.top10WrongAns[type][username];
-          field.percent = Math.floor(field.count / obj.wrongAns.total * 100);
-        });
+      Object.keys(obj.top5WrongAns).forEach(q => {
+        const field = obj.top5WrongAns[q];
+        field.percent = Math.floor(field.count / obj.wrongAns.total * 100);
       });
     }
 
-    // mapping uniqueUsers
+    // mapping
     Object.keys(obj.byDate).forEach(date => {
       obj.byDate[date].uniqueUsers = obj.byDate[date].uniqueUsers.length;
+    });
+
+    ['ans', 'wrongAns'].forEach(field => {
+      obj[field].byDepartments = Object.keys(obj[field].byDepartments)
+        .map(dep => {
+          return {
+            department: dep,
+            count: obj[field].byDepartments[dep].count,
+            percent: obj[field].byDepartments[dep].percent,
+          };
+        });
+
+      obj[field].byType = Object.keys(obj[field].byType)
+        .map(type => {
+          return {
+            type,
+            count: obj[field].byType[type],
+          };
+        });
+
+      obj[field].byUser = Object.keys(obj[field].byUser)
+        .map(username => {
+          return {
+            username,
+            count: obj[field].byUser[username].count,
+            user: obj[field].byUser[username].user,
+            percent: obj[field].byUser[username].percent,
+          };
+        });
+    });
+
+    obj.wrongAns.byGroup = Object.keys(obj.wrongAns.byGroup).map(group => {
+      return {
+        group,
+        count: obj.wrongAns.byGroup[group].count,
+        title: obj.wrongAns.byGroup[group].title,
+        percent: obj.wrongAns.byGroup[group].percent,
+      };
+    });
+
+    obj.top5WrongAns = Object.keys(obj.top5WrongAns).map(q => {
+      return {
+        question: q,
+        count: obj.top5WrongAns[q].count,
+        percent: obj.top5WrongAns[q].percent,
+        types: obj.top5WrongAns[q].types,
+      };
     });
 
     return obj;
