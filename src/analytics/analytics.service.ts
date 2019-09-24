@@ -196,4 +196,20 @@ export class AnalyticsService {
 
     return obj;
   }
+
+  async getAnswers(dateFrom, dateTo) {
+    const dateF = dateFrom.split('.').reverse().join('.');
+    const dateL = dateTo.split('.').reverse().join('.');
+    const answers = await this.answersService.findAnalTableData(dateF, dateL);
+
+    answers.forEach(ans => {
+      if (Array.isArray(ans.photos)) {
+        ans.photos.forEach(phObj => {
+          // exif extraction stub
+          delete phObj.image;
+        });
+      }
+    })
+    return answers
+  }
 }

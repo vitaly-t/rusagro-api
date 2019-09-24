@@ -11,4 +11,10 @@ export class AnalyticsController {
     const { firstDate, lastDate } = query;
     return await this.analyticsService.getCommonAnalytics(firstDate, lastDate);
   }
+
+  @Get('answers')
+  async getAnswers(@Query() query) {
+    const { firstDate, lastDate } = query;
+    return await this.analyticsService.getAnswers(firstDate, lastDate);
+  }
 }
