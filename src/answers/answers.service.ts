@@ -104,13 +104,13 @@ export class AnswersService {
     s.type, s.plate_number, s.brand,
     pd.name as "department",
     answer, date_created as "dateCreated", date_updated as "dateUpdated",
-    (select array_agg(row_to_json(t)) from (select id, image, original_name from images where answer_id = a.id) t) as photos
+    (select array_agg(row_to_json(t)) from (select id, original_name from images where answer_id = a.id) t) as photos
       from answers a
     join users u on u.id = a.user_id
     join sss s on s.id = a.sss_id
     join production_departments pd on pd.id = s.department_id
       where
-    date(date_created) >= $1 and date(date_created) < $2;`;
+    date(date_created) >= $1 and date(date_created) <= $2;`;
     return await this.db.find(query, [dateFrom, dateTo]);
   }
 
