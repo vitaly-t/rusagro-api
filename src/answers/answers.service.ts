@@ -90,9 +90,9 @@ export class AnswersService {
     const query = `select u.username, u.first_name as "firstName",
     u.last_name as "lastName", answer, date(date_created), s.type,
     pd.name as "department"
-      from answers_2 a2
-    join users u on u.id = a2.user_id
-    join sss s on s.id = a2.sss_id
+      from answers a
+    join users u on u.id = a.user_id
+    join sss s on s.id = a.sss_id
     join production_departments pd on pd.id = s.department_id
       where
     date(date_created) >= $1 and date(date_created) <= $2`;
@@ -104,10 +104,10 @@ export class AnswersService {
     s.type, s.plate_number, s.brand,
     pd.name as "department",
     answer, date_created as "dateCreated", date_updated as "dateUpdated",
-    (select array_agg(row_to_json(t)) from (select id, image, original_name from images where answer_id = a2.id) t) as photos
-      from answers a2
-    join users u on u.id = a2.user_id
-    join sss s on s.id = a2.sss_id
+    (select array_agg(row_to_json(t)) from (select id, image, original_name from images where answer_id = a.id) t) as photos
+      from answers a
+    join users u on u.id = a.user_id
+    join sss s on s.id = a.sss_id
     join production_departments pd on pd.id = s.department_id
       where
     date(date_created) >= $1 and date(date_created) < $2;`;
