@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AnswersService } from '../answers/answers.service';
+const piexif = require('piexifjs');
 
 @Injectable()
 export class AnalyticsService {
@@ -251,10 +252,26 @@ export class AnalyticsService {
     const answers = await this.answersService.findAnalTableData(dateF, dateL);
 
     answers.forEach(ans => {
+      // machine gps data stub
       ans.compliance = 'no-data';
+      try {
+        ans.status = !!Object.values(ans.answer.result.panels[0].questions)
+          .find((el: any) => el.t === 'radiogroup' && el.a === '1');
+      } catch {
+        ans.status = false;
+      }
+      delete ans.answer;
       if (Array.isArray(ans.photos)) {
         ans.photos.forEach(phObj => {
           // exif extraction stub
+          try {
+            const { GPS } = piexif.load('data:image/jpeg;base64,' + phObj.image);
+            if (GPS[1]) {
+              phObj.lat = piexif.GPSHelper.dmsRationalToDeg(GPS[piexif.GPSIFD.GPSLatitude], GPS[piexif.GPSIFD.GPSLatitudeRef]);
+              phObj.lon = piexif.GPSHelper.dmsRationalToDeg(GPS[piexif.GPSIFD.GPSLongitude], GPS[piexif.GPSIFD.GPSLongitudeRef]);
+              console.log(phObj.lat, phObj.lon);
+            }
+          } catch {}
           delete phObj.image;
         });
       }
