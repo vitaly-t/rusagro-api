@@ -253,6 +253,7 @@ export class AnalyticsService {
     const answers = await this.answersService.findAnalTableData(dateF, dateL);
 
     answers.forEach(ans => {
+      ans.compliance = 'no-data';
       if (Array.isArray(ans.photos)) {
         ans.photos.forEach(phObj => {
           // exif extraction stub
