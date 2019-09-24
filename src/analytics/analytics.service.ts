@@ -188,6 +188,10 @@ export class AnalyticsService {
     }
 
     // mapping
+    const compFunc = (a, b) => {
+      return b.count - a.count;
+    };
+
     Object.keys(obj.byDate).forEach(date => {
       obj.byDate[date].uniqueUsers = obj.byDate[date].uniqueUsers.length;
     });
@@ -200,7 +204,7 @@ export class AnalyticsService {
             count: obj[field].byDepartments[dep].count,
             percent: obj[field].byDepartments[dep].percent,
           };
-        });
+        }).sort(compFunc);
 
       obj[field].byType = Object.keys(obj[field].byType)
         .map(type => {
@@ -208,7 +212,7 @@ export class AnalyticsService {
             type,
             count: obj[field].byType[type],
           };
-        });
+        }).sort(compFunc);
 
       obj[field].byUser = Object.keys(obj[field].byUser)
         .map(username => {
@@ -218,7 +222,7 @@ export class AnalyticsService {
             user: obj[field].byUser[username].user,
             percent: obj[field].byUser[username].percent,
           };
-        });
+        }).sort(compFunc);
     });
 
     obj.wrongAns.byGroup = Object.keys(obj.wrongAns.byGroup).map(group => {
@@ -228,7 +232,7 @@ export class AnalyticsService {
         title: obj.wrongAns.byGroup[group].title,
         percent: obj.wrongAns.byGroup[group].percent,
       };
-    });
+    }).sort(compFunc);
 
     obj.top5WrongAns = Object.keys(obj.top5WrongAns).map(q => {
       return {
@@ -237,7 +241,8 @@ export class AnalyticsService {
         percent: obj.top5WrongAns[q].percent,
         types: obj.top5WrongAns[q].types,
       };
-    });
+    })
+      .sort(compFunc).slice(0, 5);
 
     return obj;
   }
