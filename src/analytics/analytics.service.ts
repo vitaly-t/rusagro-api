@@ -84,7 +84,7 @@ export class AnalyticsService {
       // wrong answers counting
       Object.keys(ans.answer).forEach(zone => {
         obj.wrongAns.byGroup[zone] = obj.wrongAns.byGroup[zone] || {
-          count: 0, name: ans.answer[zone].title, percent: 0,
+          count: 0, title: ans.answer[zone].title, percent: 0,
         };
 
         ans.answer[zone].panels.forEach(panel => {
@@ -200,7 +200,7 @@ export class AnalyticsService {
       obj[field].byDepartments = Object.keys(obj[field].byDepartments)
         .map(dep => {
           return {
-            department: dep,
+            title: dep,
             count: obj[field].byDepartments[dep].count,
             percent: obj[field].byDepartments[dep].percent,
           };
