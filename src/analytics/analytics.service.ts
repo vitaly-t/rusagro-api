@@ -259,7 +259,7 @@ export class AnalyticsService {
           delete phObj.image;
         });
       }
-    })
-    return answers
+    });
+    return answers;
   }
 }

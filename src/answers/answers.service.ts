@@ -100,7 +100,7 @@ export class AnswersService {
   }
 
   async findAnalTableData(dateFrom: string, dateTo: string) {
-    const query = `select u.last_name as "lastName", u.username, u.first_name as "firstName", 
+    const query = `select u.last_name as "lastName", u.username, u.first_name as "firstName",
     s.type, s.plate_number, s.brand,
     pd.name as "department",
     answer, date_created as "dateCreated", date_updated as "dateUpdated",
@@ -110,7 +110,7 @@ export class AnswersService {
     join sss s on s.id = a2.sss_id
     join production_departments pd on pd.id = s.department_id
       where
-    date(date_created) >= $1 and date(date_created) < $2;`
+    date(date_created) >= $1 and date(date_created) < $2;`;
     return await this.db.find(query, [dateFrom, dateTo]);
   }
 
