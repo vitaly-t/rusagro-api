@@ -28,15 +28,15 @@ export class DbService {
     return await this.db.one(query, [id]);
   }
 
-  async createAsnwer(userId, machineId, files) {
+  async createAsnwer(userId, machineId, images) {
     const cs = new this.pgp.helpers.ColumnSet(['image', 'original_name', 'mimetype', 'size', 'answer_id'], { table: 'images' });
     const values = [];
-    files.forEach(file => {
+    images.forEach(image => {
       values.push({
-        file,
-        original_name: file.originalname,
-        mimetype: file.mimetype,
-        size: file.size,
+        image,
+        original_name: image.originalname,
+        mimetype: image.mimetype,
+        size: image.size,
       });
     });
     const aQuery = 'insert into answers (user_id, sss_id) values ($1, $2) returning id';
