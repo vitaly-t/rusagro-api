@@ -86,7 +86,37 @@ export class AnswersService {
     return res;
   }
 
-  async findAll(userId: number) {
+  async findAllInDateRange(dateFrom: string, dateTo: string) {
+    const query = `select u.username, u.first_name as "firstName",
+    u.last_name as "lastName", answer, date(date_created), s.type,
+    pd.name as "department"
+      from answers a
+    join users u on u.id = a.user_id
+    join sss s on s.id = a.sss_id
+    join production_departments pd on pd.id = s.department_id
+      where
+    date(date_created) >= $1 and date(date_created) <= $2`;
+    return await this.db.find(query, [dateFrom, dateTo]);
+  }
+
+  async findAnalTableData(dateFrom: string, dateTo: string) {
+    const query = `select u.first_name||' '||u.last_name as "username", 
+    s.type, s.plate_number, s.brand,
+    pd.name as "department",
+    q.quiz,
+    answer, date_created as "dateCreated", date_updated as "dateUpdated",
+    (select array_agg(row_to_json(t)) from (select id, encode(image,'base64') as image, original_name from images where answer_id = a.id) t) as photos
+      from answers a
+    join users u on u.id = a.user_id
+    join sss s on s.id = a.sss_id
+    join production_departments pd on pd.id = s.department_id
+    join quizzes q on q.machine_type_id = s.type_id
+      where
+    date(date_created) >= $1 and date(date_created) <= $2;`;
+    return await this.db.find(query, [dateFrom, dateTo]);
+  }
+
+  async findAllByUserId(userId: number) {
     const query = `select
     a.id               as "answerId",
     m.id               as "machineId",

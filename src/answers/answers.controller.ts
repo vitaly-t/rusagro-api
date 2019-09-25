@@ -21,8 +21,8 @@ export class AnswersController {
   }
 
   @Get()
-  async findAll(@Request() req) {
-    return await this.answersService.findAll(req.user.id);
+  async findAllByUserId(@Request() req) {
+    return await this.answersService.findAllByUserId(req.user.id);
   }
 
   @Get(':id')

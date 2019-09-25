@@ -15,7 +15,6 @@ export class ImagesService {
 
   async saveImages(images, req) {
     const values = [];
-    // TODO: async\await map
     for (let i = 0; i < images.length; i++) {
       const file = images[i];
       try {

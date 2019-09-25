@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import * as pgPromise from 'pg-promise';
 import { User } from '../users/user.interface';
 import { ITxOption } from './tx-option.interface';
-import * as sharp from 'sharp';
 
 @Injectable()
 export class DbService {
@@ -29,19 +28,17 @@ export class DbService {
     return await this.db.one(query, [id]);
   }
 
-  async createAsnwer(userId, machineId, files) {
+  async createAsnwer(userId, machineId, images) {
     const cs = new this.pgp.helpers.ColumnSet(['image', 'original_name', 'mimetype', 'size', 'answer_id'], { table: 'images' });
     const values = [];
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const image = await sharp(file.buffer).resize(500).toBuffer();
+    images.forEach(image => {
       values.push({
-        image,
-        original_name: file.originalname,
-        mimetype: file.mimetype,
-        size: file.size,
+        image: image.buffer,
+        original_name: image.originalname,
+        mimetype: image.mimetype,
+        size: image.size,
       });
-    }
+    });
     const aQuery = 'insert into answers (user_id, sss_id) values ($1, $2) returning id';
     return await this.db.tx(t => {
       return t.one(aQuery, [userId, machineId], a => +a.id)
