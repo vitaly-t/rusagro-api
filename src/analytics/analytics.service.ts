@@ -302,4 +302,35 @@ export class AnalyticsService {
     });
     return answers;
   }
+
+  async getAnswerDetails(id: number) {
+    const details = await this.answersService.findAnswerDetails(id);
+    details.wrongAns = [];
+
+    // wrong answers counting
+    Object.keys(details.answer).forEach(zone => {
+      details.answer[zone].panels.forEach(panel => {
+        let mainQKey = Object.keys(panel.questions).find(key => {
+          return /q\d+c\d+/.test(key);
+        });
+        if (!mainQKey && zone === 'pin') {
+          mainQKey = 'qp0c1';
+        }
+
+        const q = panel.questions[mainQKey];
+
+        if (mainQKey) {
+          if (
+            !q.a ||
+            (q.t === 'radiogroup' && q.a === '0') ||
+            (q.t === 'file' && q.a.length === 0)
+          ) {
+            details.wrongAns.push(q);
+          }
+        }
+      });
+    });
+
+    return details;
+  }
 }

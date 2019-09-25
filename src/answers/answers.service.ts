@@ -86,6 +86,23 @@ export class AnswersService {
     return res;
   }
 
+  async findAnswerDetails(id: number) {
+    const query = `select a.answer, s.plate_number as "plateNumber", s.type,
+    to_char(a.date_created, 'dd.mm.yy') as "dateCreated", s.brand,
+    u.first_name as "firstName", u.last_name as "lastName",
+    pd.name as "department", q.quiz
+    from answers a
+    join sss s on s.id = a.sss_id
+    join production_departments pd on pd.id = s.department_id
+    join users u on a.user_id = u.id
+    join machine_types mt on mt.id = s.type_id
+    join quizzes q on mt.id = q.machine_type_id
+    where a.id = $1`;
+    const res = await this.db.findOne(query, [id]);
+    res.ansCountByZone = this.getAnsCountByZone(res.answer);
+    return res;
+  }
+
   async findAllInDateRange(dateFrom: string, dateTo: string) {
     const query = `select u.username, u.first_name as "firstName",
     u.last_name as "lastName", answer, date(date_created), s.type,
