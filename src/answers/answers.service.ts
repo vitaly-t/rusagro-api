@@ -90,7 +90,7 @@ export class AnswersService {
     const query = `select a.answer, s.plate_number as "plateNumber", s.type,
     to_char(a.date_created, 'dd.mm.yy') as "dateCreated", s.brand,
     u.first_name as "firstName", u.last_name as "lastName",
-    pd.name as "department", q.quiz
+    pd.name as "department", q.quiz, q.question
     from answers a
     join sss s on s.id = a.sss_id
     join production_departments pd on pd.id = s.department_id
@@ -100,6 +100,7 @@ export class AnswersService {
     where a.id = $1`;
     const res = await this.db.findOne(query, [id]);
     res.ansCountByZone = this.getAnsCountByZone(res.answer);
+    res.qCountByZone = this.getQCountByZone(res.question, res.answer.pin);
     return res;
   }
 
