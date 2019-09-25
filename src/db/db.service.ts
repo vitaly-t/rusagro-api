@@ -33,7 +33,7 @@ export class DbService {
     const values = [];
     images.forEach(image => {
       values.push({
-        image,
+        image: image.buffer,
         original_name: image.originalname,
         mimetype: image.mimetype,
         size: image.size,
