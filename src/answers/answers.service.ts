@@ -100,11 +100,11 @@ export class AnswersService {
   }
 
   async findAnalTableData(dateFrom: string, dateTo: string) {
-    const query = `select u.first_name||' '||u.last_name as "username", 
+    const query = `select u.first_name||' '||u.last_name as "username",
     s.type, s.plate_number, s.brand,
     pd.name as "department",
     q.quiz,
-    answer, date_created as "dateCreated", date_updated as "dateUpdated",
+    answer, date_created as "dateCreated", date_updated as "dateUpdated", a.id,
     (select array_agg(row_to_json(t)) from (select id, encode(image,'base64') as image, original_name from images where answer_id = a.id) t) as photos
       from answers a
     join users u on u.id = a.user_id
