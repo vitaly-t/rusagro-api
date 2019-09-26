@@ -88,7 +88,9 @@ export class AnswersService {
 
   async findAnswerDetails(id: number) {
     const query = `select a.answer, s.plate_number as "plateNumber", s.type,
-    to_char(a.date_created, 'dd.mm.yy') as "dateCreated", s.brand,
+    to_char(a.date_created, 'dd.mm.yy') as "date",
+    a.date_created as "dateCreated",
+    a.date_updated as "dateUpdated", s.brand,
     u.first_name as "firstName", u.last_name as "lastName",
     pd.name as "department", q.quiz, q.question
     from answers a
