@@ -306,6 +306,8 @@ export class AnalyticsService {
   async getAnswerDetails(id: number) {
     const details = await this.answersService.findAnswerDetails(id);
     details.wrongAns = [];
+    details.wrongAnsTotal = 0;
+    details.wrongAnsByZonePercent = {};
 
     // wrong answers counting
     // machine gps data stub
@@ -318,6 +320,8 @@ export class AnalyticsService {
     }
 
     Object.keys(details.answer).forEach(zone => {
+      details.wrongAnsByZonePercent[zone] = details.wrongAnsByZonePercent[zone] || 0;
+
       details.answer[zone].panels.forEach(panel => {
         let mainQKey = Object.keys(panel.questions).find(key => {
           return /q\d+c\d+/.test(key);
@@ -335,6 +339,8 @@ export class AnalyticsService {
             (q.t === 'file' && q.a.length === 0)
           ) {
             details.wrongAns.push(q);
+            details.wrongAnsTotal++;
+            details.wrongAnsByZonePercent[zone]++;
           }
         }
       });
