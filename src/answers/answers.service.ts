@@ -28,12 +28,12 @@ export class AnswersService {
     Object.keys(answer).forEach(zone => {
       res[zone] = 0;
       answer[zone].panels.forEach(panel => {
-        let mainQKey = Object.keys(panel.questions).find(key => {
-          return /q\d+c\d+/.test(key);
+        const mainQKey = Object.keys(panel.questions).find(key => {
+          return /qp?\d+c\d+/.test(key);
         });
-        if (!mainQKey && zone === 'pin') {
-          mainQKey = 'qp0c1';
-        }
+        // if (!mainQKey && zone === 'pin') {
+        //   mainQKey = 'qp0c1';
+        // }
         if (mainQKey) {
           const q = panel.questions[mainQKey];
           if (zone === 'pin') {
@@ -86,6 +86,26 @@ export class AnswersService {
     return res;
   }
 
+  async findAnswerDetails(id: number) {
+    const query = `select a.answer, s.plate_number as "plateNumber", s.type,
+    to_char(a.date_created, 'dd.mm.yy') as "date",
+    a.date_created as "dateCreated",
+    a.date_updated as "dateUpdated", s.brand,
+    u.first_name as "firstName", u.last_name as "lastName",
+    pd.name as "department", q.quiz, q.question
+    from answers a
+    join sss s on s.id = a.sss_id
+    join production_departments pd on pd.id = s.department_id
+    join users u on a.user_id = u.id
+    join machine_types mt on mt.id = s.type_id
+    join quizzes q on mt.id = q.machine_type_id
+    where a.id = $1`;
+    const res = await this.db.findOne(query, [id]);
+    res.ansCountByZone = this.getAnsCountByZone(res.answer);
+    res.qCountByZone = this.getQCountByZone(res.question, res.answer.pin);
+    return res;
+  }
+
   async findAllInDateRange(dateFrom: string, dateTo: string) {
     const query = `select u.username, u.first_name as "firstName",
     u.last_name as "lastName", answer, date(date_created), s.type,
@@ -100,11 +120,11 @@ export class AnswersService {
   }
 
   async findAnalTableData(dateFrom: string, dateTo: string) {
-    const query = `select u.first_name||' '||u.last_name as "username", 
+    const query = `select u.first_name||' '||u.last_name as "username",
     s.type, s.plate_number, s.brand,
     pd.name as "department",
     q.quiz,
-    answer, date_created as "dateCreated", date_updated as "dateUpdated",
+    answer, date_created as "dateCreated", date_updated as "dateUpdated", a.id,
     (select array_agg(row_to_json(t)) from (select id, encode(image,'base64') as image, original_name from images where answer_id = a.id) t) as photos
       from answers a
     join users u on u.id = a.user_id
@@ -112,7 +132,7 @@ export class AnswersService {
     join production_departments pd on pd.id = s.department_id
     join quizzes q on q.machine_type_id = s.type_id
       where
-    date(date_created) >= $1 and date(date_created) <= $2;`;
+    date(date_created) >= $1 and date(date_created) <= $2`;
     return await this.db.find(query, [dateFrom, dateTo]);
   }
 

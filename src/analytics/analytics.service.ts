@@ -260,6 +260,30 @@ export class AnalyticsService {
       } catch {
         ans.status = false;
       }
+      // wrong and counting
+      ans.wrongAnsCount = 0;
+      Object.keys(ans.answer).forEach(zone => {
+        ans.answer[zone].panels.forEach(panel => {
+          let mainQKey = Object.keys(panel.questions).find(key => {
+            return /q\d+c\d+/.test(key);
+          });
+          if (!mainQKey && zone === 'pin') {
+            mainQKey = 'qp0c1';
+          }
+
+          const q = panel.questions[mainQKey];
+
+          if (mainQKey) {
+            if (
+              !q.a ||
+              (q.t === 'radiogroup' && q.a === '0') ||
+              (q.t === 'file' && q.a.length === 0)
+            ) {
+              ans.wrongAnsCount++;
+            }
+          }
+        });
+      });
       delete ans.answer;
       if (Array.isArray(ans.photos)) {
         ans.photos.forEach(phObj => {
@@ -277,5 +301,51 @@ export class AnalyticsService {
       }
     });
     return answers;
+  }
+
+  async getAnswerDetails(id: number) {
+    const details = await this.answersService.findAnswerDetails(id);
+    details.wrongAns = [];
+    details.wrongAnsTotal = 0;
+    details.wrongAnsByZonePercent = {};
+
+    // wrong answers counting
+    // machine gps data stub
+    details.compliance = 'no-data';
+    try {
+      details.status = !!Object.values(details.answer.result.panels[0].questions)
+        .find((el: any) => el.t === 'radiogroup' && el.a === '1');
+    } catch {
+      details.status = false;
+    }
+
+    Object.keys(details.answer).forEach(zone => {
+      details.wrongAnsByZonePercent[zone] = details.wrongAnsByZonePercent[zone] || 0;
+
+      details.answer[zone].panels.forEach(panel => {
+        let mainQKey = Object.keys(panel.questions).find(key => {
+          return /q\d+c\d+/.test(key);
+        });
+        if (!mainQKey && zone === 'pin') {
+          mainQKey = 'qp0c1';
+        }
+
+        const q = panel.questions[mainQKey];
+
+        if (mainQKey) {
+          if (
+            !q.a ||
+            (q.t === 'radiogroup' && q.a === '0') ||
+            (q.t === 'file' && q.a.length === 0)
+          ) {
+            details.wrongAns.push(q);
+            details.wrongAnsTotal++;
+            details.wrongAnsByZonePercent[zone]++;
+          }
+        }
+      });
+    });
+
+    return details;
   }
 }
