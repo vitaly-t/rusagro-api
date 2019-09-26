@@ -28,12 +28,12 @@ export class AnswersService {
     Object.keys(answer).forEach(zone => {
       res[zone] = 0;
       answer[zone].panels.forEach(panel => {
-        let mainQKey = Object.keys(panel.questions).find(key => {
+        const mainQKey = Object.keys(panel.questions).find(key => {
           return /q\d+c\d+/.test(key);
         });
-        if (!mainQKey && zone === 'pin') {
-          mainQKey = 'qp0c1';
-        }
+        // if (!mainQKey && zone === 'pin') {
+        //   mainQKey = 'qp0c1';
+        // }
         if (mainQKey) {
           const q = panel.questions[mainQKey];
           if (zone === 'pin') {
