@@ -29,7 +29,7 @@ export class AnswersService {
       res[zone] = 0;
       answer[zone].panels.forEach(panel => {
         const mainQKey = Object.keys(panel.questions).find(key => {
-          return /q\d+c\d+/.test(key);
+          return /qp?\d+c\d+/.test(key);
         });
         // if (!mainQKey && zone === 'pin') {
         //   mainQKey = 'qp0c1';
