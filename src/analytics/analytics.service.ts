@@ -308,6 +308,15 @@ export class AnalyticsService {
     details.wrongAns = [];
 
     // wrong answers counting
+    // machine gps data stub
+    details.compliance = 'no-data';
+    try {
+      details.status = !!Object.values(details.answer.result.panels[0].questions)
+        .find((el: any) => el.t === 'radiogroup' && el.a === '1');
+    } catch {
+      details.status = false;
+    }
+
     Object.keys(details.answer).forEach(zone => {
       details.answer[zone].panels.forEach(panel => {
         let mainQKey = Object.keys(panel.questions).find(key => {
