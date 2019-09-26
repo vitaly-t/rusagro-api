@@ -124,15 +124,8 @@ export class AnswersService {
     s.type, s.plate_number, s.brand,
     pd.name as "department",
     q.quiz,
-    answer, a.id, date_created as "dateCreated", date_updated as "dateUpdated",
-    (
-      select array_agg(row_to_json(t))
-      from (
-        select id, encode(image,'base64') as image,
-        original_name
-        from images where answer_id = a.id
-        ) t
-      ) as photos
+    answer, date_created as "dateCreated", date_updated as "dateUpdated", a.id,
+    (select array_agg(row_to_json(t)) from (select id, encode(image,'base64') as image, original_name from images where answer_id = a.id) t) as photos
       from answers a
     join users u on u.id = a.user_id
     join sss s on s.id = a.sss_id
